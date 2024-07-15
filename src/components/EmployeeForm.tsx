@@ -54,6 +54,11 @@ const EmployeeForm: React.FC = () => {
     const employeeCodePattern = /^\d{4}$/;
     const contactPattern = /^\d{10}$/;
 
+    formData.firstName = formData.firstName.trim();
+    formData.lastName = formData.lastName.trim();
+    formData.contact = formData.contact.trim();
+    formData.address = formData.address.trim();
+
     if (!namePattern.test(formData.firstName)) {
       newErrors.firstName = "First name should contain only letters";
     }
@@ -88,12 +93,11 @@ const EmployeeForm: React.FC = () => {
     if (!validate()) {
       return;
     }
-
     console.log("Form Data:", formData);
     setFormData(initialFormData);
     try {
       const response = await axios.post(
-        "https://your-api-endpoint.com/submit",
+        "http://192.168.1.11:5126/api/Employee",
         formData
       );
       console.log("Form submitted successfully:", response.data);
@@ -155,6 +159,11 @@ const EmployeeForm: React.FC = () => {
                 onChange={handleChange}
                 margin="normal"
                 required
+                inputProps={{
+                    maxLength: 4,
+                    pattern: "[0-9]*",
+                    inputMode: "numeric",
+                  }}
                 error={!!errors.employeeCode}
                 helperText={errors.employeeCode}
               />
@@ -169,6 +178,11 @@ const EmployeeForm: React.FC = () => {
                 onChange={handleChange}
                 margin="normal"
                 required
+                inputProps={{
+                    maxLength: 10,
+                    pattern: "[0-9]*",
+                    inputMode: "numeric",
+                  }}
                 error={!!errors.contact}
                 helperText={errors.contact}
               />
