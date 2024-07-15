@@ -58,6 +58,7 @@ const EmployeeFormStyled: React.FC = () => {
 
   const [formData, setFormData] = useState<EmployeeFormState>(initialFormData);
   const [errors, setErrors] = useState<EmployeeFormErrors>({});
+  const [isPending, setIsPending] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -117,6 +118,8 @@ const EmployeeFormStyled: React.FC = () => {
 
     console.log("Form Data:", formData);
     setFormData(initialFormData);
+    setIsPending(true);
+
     try {
       // Using Axios
       const response = await axios.post(
@@ -124,6 +127,7 @@ const EmployeeFormStyled: React.FC = () => {
         formData
       );
       console.log("Form submitted successfully:", response.data);
+      setIsPending(false);
 
       //   Using Fetch
       // fetch("http://192.168.1.11:5126/api/Employee", {
@@ -314,14 +318,27 @@ const EmployeeFormStyled: React.FC = () => {
               </Grid>
             </Grid>
             <Box display="flex" justifyContent="center" sx={{ mt: 3 }}>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                sx={{ mt: 3, padding: "10px 20px" }} // Custom padding for button
-              >
-                Submit
-              </Button>
+              {!isPending && (
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  sx={{ mt: 3 }}
+                >
+                  Submit
+                </Button>
+              )}
+
+              {isPending && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ mt: 3 }}
+                  disabled
+                >
+                  Submitting...
+                </Button>
+              )}
             </Box>
           </Box>
         </Box>

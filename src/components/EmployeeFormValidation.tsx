@@ -32,6 +32,7 @@ const EmployeeFormValidation: React.FC = () => {
 
   const [formData, setFormData] = useState<EmployeeFormState>(initialFormData);
   const [errors, setErrors] = useState<EmployeeFormErrors>({});
+  const [isPending, setIsPending] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -89,6 +90,8 @@ const EmployeeFormValidation: React.FC = () => {
 
     console.log("Form Data:", formData);
     setFormData(initialFormData);
+    setIsPending(true);
+
     try {
       // Using Axios
       const response = await axios.post(
@@ -96,6 +99,7 @@ const EmployeeFormValidation: React.FC = () => {
         formData
       );
       console.log("Form submitted successfully:", response.data);
+      setIsPending(false);
 
       //   Using Fetch
       // fetch("http://192.168.1.11:5126/api/Employee", {
@@ -198,14 +202,24 @@ const EmployeeFormValidation: React.FC = () => {
           error={!!errors.address}
           helperText={errors.address}
         />
-        <Button
+        {!isPending && <Button
           type="submit"
           variant="contained"
           color="primary"
           sx={{ mt: 3 }}
         >
           Submit
-        </Button>
+        </Button>}
+
+        {isPending && <Button 
+          variant="contained"
+          color="primary"
+          sx={{ mt: 3 }}
+          disabled
+        >
+          Submitting... 
+        </Button>}
+
       </Box>
     </Container>
   );
