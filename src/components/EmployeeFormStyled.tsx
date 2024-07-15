@@ -6,8 +6,27 @@ import {
   Container,
   Box,
   Grid,
+  ThemeProvider,
+  createTheme,
 } from "@mui/material";
 import axios from "axios";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#1976d2", // Primary color
+    },
+    secondary: {
+      main: "#dc004e", // Secondary color
+    },
+  },
+  typography: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    h5: {
+      fontWeight: 600,
+    },
+  },
+});
 
 interface EmployeeFormState {
   firstName: string;
@@ -53,6 +72,7 @@ const EmployeeFormStyled: React.FC = () => {
     const namePattern = /^[A-Za-z]+$/;
     const employeeCodePattern = /^\d{4}$/;
     const contactPattern = /^\d{10}$/;
+    const addressPattern = /^[A-Za-z]+$/;
 
     if (!namePattern.test(formData.firstName)) {
       newErrors.firstName = "First name should contain only letters";
@@ -74,8 +94,9 @@ const EmployeeFormStyled: React.FC = () => {
       newErrors.dob = "Date of birth should not be null";
     }
 
-    if (!formData.address) {
-      newErrors.address = "Address should not be empty";
+    if (!formData.address || !addressPattern.test(formData.address)) {
+      newErrors.address =
+        "Address should not be empty and must contain text only";
     }
 
     setErrors(newErrors);
@@ -106,114 +127,184 @@ const EmployeeFormStyled: React.FC = () => {
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
+    <ThemeProvider theme={theme}>
+      <Container
+        component="main"
+        maxWidth="xs"
+        sx={{ padding: 2 }} 
       >
-        <Typography component="h1" variant="h5">
-          Employee Registration
-        </Typography>
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 5, p: 3, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 1 }}>
-        <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="First Name"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                margin="normal"
-                required
-                error={!!errors.firstName}
-                helperText={errors.firstName}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Last Name"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                margin="normal"
-                required
-                error={!!errors.lastName}
-                helperText={errors.lastName}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Employee Code"
-                name="employeeCode"
-                value={formData.employeeCode}
-                onChange={handleChange}
-                margin="normal"
-                required
-                error={!!errors.employeeCode}
-                helperText={errors.employeeCode}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Contact"
-                name="contact"
-                value={formData.contact}
-                onChange={handleChange}
-                margin="normal"
-                required
-                error={!!errors.contact}
-                helperText={errors.contact}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Date of Birth"
-                name="dob"
-                type="date"
-                value={formData.dob}
-                onChange={handleChange}
-                margin="normal"
-                InputLabelProps={{ shrink: true }}
-                required
-                error={!!errors.dob}
-                helperText={errors.dob}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Address"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                margin="normal"
-                required
-                error={!!errors.address}
-                helperText={errors.address}
-              />
-            </Grid>
-          </Grid>
-          <Box display="flex" justifyContent="center" sx={{mt:3}}>
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            sx={{ mt: 3 }}
+        <Box
+          sx={{
+            marginTop: 8,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
+            Employee Registration
+          </Typography>
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{
+              mt: 5,
+              p: 3,
+              bgcolor: "#f5f5f5", // Light background color for the form
+              borderRadius: 2,
+              boxShadow: 3,
+            }}
           >
-            Submit
-          </Button>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="First Name"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  margin="normal"
+                  required
+                  error={!!errors.firstName}
+                  helperText={errors.firstName}
+                  sx={{
+                    bgcolor: "#fff", // White background for input
+                    borderRadius: 1,
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: errors.firstName ? "red" : "#ccc", // Red border on error
+                      },
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Last Name"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  margin="normal"
+                  required
+                  error={!!errors.lastName}
+                  helperText={errors.lastName}
+                  sx={{
+                    bgcolor: "#fff",
+                    borderRadius: 1,
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: errors.lastName ? "red" : "#ccc",
+                      },
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Employee Code"
+                  name="employeeCode"
+                  value={formData.employeeCode}
+                  onChange={handleChange}
+                  margin="normal"
+                  required
+                  error={!!errors.employeeCode}
+                  helperText={errors.employeeCode}
+                  sx={{
+                    bgcolor: "#fff",
+                    borderRadius: 1,
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: errors.employeeCode ? "red" : "#ccc",
+                      },
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Contact"
+                  name="contact"
+                  value={formData.contact}
+                  onChange={handleChange}
+                  margin="normal"
+                  required
+                  error={!!errors.contact}
+                  helperText={errors.contact}
+                  sx={{
+                    bgcolor: "#fff",
+                    borderRadius: 1,
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: errors.contact ? "red" : "#ccc",
+                      },
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Date of Birth"
+                  name="dob"
+                  type="date"
+                  value={formData.dob}
+                  onChange={handleChange}
+                  margin="normal"
+                  InputLabelProps={{ shrink: true }}
+                  required
+                  error={!!errors.dob}
+                  helperText={errors.dob}
+                  sx={{
+                    bgcolor: "#fff",
+                    borderRadius: 1,
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: errors.dob ? "red" : "#ccc",
+                      },
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Address"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  margin="normal"
+                  required
+                  error={!!errors.address}
+                  helperText={errors.address}
+                  sx={{
+                    bgcolor: "#fff",
+                    borderRadius: 1,
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: errors.address ? "red" : "#ccc",
+                      },
+                    },
+                  }}
+                />
+              </Grid>
+            </Grid>
+            <Box display="flex" justifyContent="center" sx={{ mt: 3 }}>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                sx={{ mt: 3, padding: "10px 20px" }} // Custom padding for button
+              >
+                Submit
+              </Button>
+            </Box>
           </Box>
         </Box>
-      </Box>
-    </Container>
+      </Container>
+    </ThemeProvider>
   );
 };
 
