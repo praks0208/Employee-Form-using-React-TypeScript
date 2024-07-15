@@ -96,11 +96,22 @@ const EmployeeForm: React.FC = () => {
     console.log("Form Data:", formData);
     setFormData(initialFormData);
     try {
+      // Using Axios
       const response = await axios.post(
         "http://192.168.1.11:5126/api/Employee",
         formData
       );
       console.log("Form submitted successfully:", response.data);
+
+      //   Using Fetch
+      // fetch("http://192.168.1.11:5126/api/Employee", {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json"},
+      //       body: JSON.stringify(formData)
+      // }).then(() => {
+      //     console.log("Form submitted successfully");
+      // })
 
       setFormData(initialFormData);
       setErrors({});
@@ -160,10 +171,10 @@ const EmployeeForm: React.FC = () => {
                 margin="normal"
                 required
                 inputProps={{
-                    maxLength: 4,
-                    pattern: "[0-9]*",
-                    inputMode: "numeric",
-                  }}
+                  maxLength: 4,
+                  pattern: "[0-9]*",
+                  inputMode: "numeric",
+                }}
                 error={!!errors.employeeCode}
                 helperText={errors.employeeCode}
               />
@@ -179,10 +190,10 @@ const EmployeeForm: React.FC = () => {
                 margin="normal"
                 required
                 inputProps={{
-                    maxLength: 10,
-                    pattern: "[0-9]*",
-                    inputMode: "numeric",
-                  }}
+                  maxLength: 10,
+                  pattern: "[0-9]*",
+                  inputMode: "numeric",
+                }}
                 error={!!errors.contact}
                 helperText={errors.contact}
               />

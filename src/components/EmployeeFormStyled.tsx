@@ -118,11 +118,22 @@ const EmployeeFormStyled: React.FC = () => {
     console.log("Form Data:", formData);
     setFormData(initialFormData);
     try {
+      // Using Axios
       const response = await axios.post(
         "http://192.168.1.11:5126/api/Employee",
         formData
       );
       console.log("Form submitted successfully:", response.data);
+
+      //   Using Fetch
+      // fetch("http://192.168.1.11:5126/api/Employee", {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json"},
+      //       body: JSON.stringify(formData)
+      // }).then(() => {
+      //     console.log("Form submitted successfully");
+      // })
 
       setFormData(initialFormData);
       setErrors({});
@@ -133,11 +144,7 @@ const EmployeeFormStyled: React.FC = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Container
-        component="main"
-        maxWidth="xs"
-        sx={{ padding: 2 }} 
-      >
+      <Container component="main" maxWidth="xs" sx={{ padding: 2 }}>
         <Box
           sx={{
             marginTop: 8,
