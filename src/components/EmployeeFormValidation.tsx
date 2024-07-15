@@ -20,7 +20,7 @@ interface EmployeeFormErrors {
   address?: string;
 }
 
-const EmployeeForm: React.FC = () => {
+const EmployeeFormValidation: React.FC = () => {
   const initialFormData: EmployeeFormState = {
     firstName: "",
     lastName: "",
@@ -188,4 +188,4 @@ const EmployeeForm: React.FC = () => {
   );
 };
 
-export default EmployeeForm;
+export default EmployeeFormValidation;
