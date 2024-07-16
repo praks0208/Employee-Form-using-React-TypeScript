@@ -146,7 +146,7 @@ const EmployeeFormValidation: React.FC = () => {
 
       if (response.ok) {
         console.log("Form submitted successfully");
-        setSubmitSuccess(true); // Activate success alert
+        setSubmitSuccess(true);
       } else {
         throw new Error("Failed to submit form");
       }
@@ -164,11 +164,21 @@ const EmployeeFormValidation: React.FC = () => {
     if (submitSuccess) {
       const timer = setTimeout(() => {
         setSubmitSuccess(false);
-      }, 5000); // Hide after 5 seconds
+      }, 5000); 
 
-      return () => clearTimeout(timer); // Cleanup
+      return () => clearTimeout(timer); 
     }
   }, [submitSuccess]);
+
+  const inputStyle = {
+    bgcolor: "#fff",
+    borderRadius: 1,
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        borderColor: errors.firstName ? "red" : "#ccc",
+      },
+    },
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -207,15 +217,7 @@ const EmployeeFormValidation: React.FC = () => {
                   required
                   error={!!errors.firstName}
                   helperText={errors.firstName}
-                  sx={{
-                    bgcolor: "#fff",
-                    borderRadius: 1,
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: errors.firstName ? "red" : "#ccc",
-                      },
-                    },
-                  }}
+                  sx={inputStyle}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -229,15 +231,7 @@ const EmployeeFormValidation: React.FC = () => {
                   required
                   error={!!errors.lastName}
                   helperText={errors.lastName}
-                  sx={{
-                    bgcolor: "#fff",
-                    borderRadius: 1,
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: errors.lastName ? "red" : "#ccc",
-                      },
-                    },
-                  }}
+                  sx={inputStyle}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -256,15 +250,7 @@ const EmployeeFormValidation: React.FC = () => {
                   }}
                   error={!!errors.employeeCode}
                   helperText={errors.employeeCode}
-                  sx={{
-                    bgcolor: "#fff",
-                    borderRadius: 1,
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: errors.employeeCode ? "red" : "#ccc",
-                      },
-                    },
-                  }}
+                  sx={inputStyle}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -283,15 +269,7 @@ const EmployeeFormValidation: React.FC = () => {
                   }}
                   error={!!errors.contact}
                   helperText={errors.contact}
-                  sx={{
-                    bgcolor: "#fff",
-                    borderRadius: 1,
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: errors.contact ? "red" : "#ccc",
-                      },
-                    },
-                  }}
+                  sx={inputStyle}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -307,15 +285,7 @@ const EmployeeFormValidation: React.FC = () => {
                   required
                   error={!!errors.dob}
                   helperText={errors.dob}
-                  sx={{
-                    bgcolor: "#fff",
-                    borderRadius: 1,
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: errors.dob ? "red" : "#ccc",
-                      },
-                    },
-                  }}
+                  sx={inputStyle}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -329,15 +299,7 @@ const EmployeeFormValidation: React.FC = () => {
                   required
                   error={!!errors.address}
                   helperText={errors.address}
-                  sx={{
-                    bgcolor: "#fff",
-                    borderRadius: 1,
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: errors.address ? "red" : "#ccc",
-                      },
-                    },
-                  }}
+                  sx={inputStyle}
                 />
               </Grid>
             </Grid>

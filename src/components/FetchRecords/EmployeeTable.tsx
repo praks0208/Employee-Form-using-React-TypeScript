@@ -10,6 +10,34 @@ import {
   Paper,
 } from "@mui/material";
 
+
+import { makeStyles } from "@material-ui/core";
+
+const useStyles = makeStyles({
+  table: {
+    minWidth: 650,
+  },
+  tableHead: {
+    backgroundColor: "#b6c6e0",
+    fontWeight: "bold",
+  },
+  tableRow: {
+    "&:nth-of-type(odd)": {
+      backgroundColor: "#f9f9f9",
+    },
+  },
+  tableCell: {
+    padding: "10px 20px",
+  },
+  container: {
+    marginTop: "20px",
+  },
+  paper: {
+    marginTop: "20px",
+    padding: "20px",
+  },
+});
+
 interface Employee {
   firstName: string;
   lastName: string;
@@ -20,6 +48,7 @@ interface Employee {
 }
 
 const EmployeeTable: React.FC = () => {
+  const classes = useStyles();
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -43,42 +72,34 @@ const EmployeeTable: React.FC = () => {
     fetchEmployees();
   }, []);
 
-//   const formatDate = (dateString: string): string => {
-//     const dateParts = dateString.split("T")[0].split("-");
-//     const year = dateParts[0];
-//     const month = dateParts[1];
-//     const day = dateParts[2];
-//     return `${year}-${month}-${day}`;
-//   };
-
   return (
-    <Container>
+    <Container className={classes.container}>
       <Typography variant="h4" gutterBottom>
         Employee Records
       </Typography>
       {loading && <Typography>Loading...</Typography>}
       {error && <Typography color="error">{error}</Typography>}
-      <Paper>
-        <Table>
-          <TableHead>
+      <Paper className={classes.paper}>
+        <Table className={classes.table}>
+          <TableHead className={classes.tableHead}>
             <TableRow>
-              <TableCell>First Name</TableCell>
-              <TableCell>Last Name</TableCell>
-              <TableCell>Employee Code</TableCell>
-              <TableCell>Contact</TableCell>
-              <TableCell>Date of Birth</TableCell>
-              <TableCell>Address</TableCell>
+              <TableCell className={classes.tableCell}>First Name</TableCell>
+              <TableCell className={classes.tableCell}>Last Name</TableCell>
+              <TableCell className={classes.tableCell}>Employee Code</TableCell>
+              <TableCell className={classes.tableCell}>Contact</TableCell>
+              <TableCell className={classes.tableCell}>Date of Birth</TableCell>
+              <TableCell className={classes.tableCell}>Address</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {employees.map((employee, index) => (
-              <TableRow key={index}>
-                <TableCell>{employee.firstName}</TableCell>
-                <TableCell>{employee.lastName}</TableCell>
-                <TableCell>{employee.employeeCode}</TableCell>
-                <TableCell>{employee.contact}</TableCell>
-                <TableCell>{employee.doB.split("T")[0]}</TableCell>
-                <TableCell>{employee.address}</TableCell>
+              <TableRow key={index} className={classes.tableRow}>
+                <TableCell className={classes.tableCell}>{employee.firstName}</TableCell>
+                <TableCell className={classes.tableCell}>{employee.lastName}</TableCell>
+                <TableCell className={classes.tableCell}>{employee.employeeCode}</TableCell>
+                <TableCell className={classes.tableCell}>{employee.contact}</TableCell>
+                <TableCell className={classes.tableCell}>{employee.doB.split("T")[0]}</TableCell>
+                <TableCell className={classes.tableCell}>{employee.address}</TableCell>
               </TableRow>
             ))}
           </TableBody>
