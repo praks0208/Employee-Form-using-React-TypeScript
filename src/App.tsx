@@ -1,9 +1,13 @@
 import React from "react";
+import { Box } from "@mui/material";
+
 import EmployeeForm from "./components/EmployeeForm";
 import EmployeeFormValidation from "./components/EmployeeFormValidation";
 import EmployeeFormStyled from "./components/EmployeeFormStyled";
-import { Box } from "@mui/material";
+
+
 import EmployeeRecords from "./components/FetchRecords/EmployeeRecords";
+import EmployeeTable from "./components/FetchRecords/EmployeeTable";
 const App: React.FC = () => {
   return (
     <Box sx={{
@@ -21,8 +25,8 @@ const App: React.FC = () => {
         <EmployeeFormValidation />
       </Box>
       <Box>
-        {/* <EmployeeDataFetcher /> */}
-        <EmployeeRecords />
+        <EmployeeTable />
+        {/* <EmployeeRecords /> */}
       </Box>
     </Box>
   );
