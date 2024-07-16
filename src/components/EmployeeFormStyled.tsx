@@ -196,7 +196,7 @@ const EmployeeFormStyled: React.FC = () => {
                   error={!!errors.firstName}
                   helperText={errors.firstName}
                   sx={{
-                    bgcolor: "#fff", 
+                    bgcolor: "#fff",
                     borderRadius: 1,
                     "& .MuiOutlinedInput-root": {
                       "& fieldset": {
