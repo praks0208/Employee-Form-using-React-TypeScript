@@ -1,0 +1,25 @@
+//EMPLOYEE REGISTRATION FORM - 11/7/24
+
+*INPUT FIELDS*
+1. First Name
+2. Last Name
+3. Employee Code
+4. Contact 
+5. Date of Birth
+6. Address
+
+*Validations*
+1. First Name & Last Name - Should contain only text
+2. Employee Code - Should only be number and maxlength 4 numbers.
+3. Contact - Should only be number and maxlength 10 numbers.
+4. Address - Should be text only and maxlength 10 characters
+
+//New Tasks - 16/7/24
+Address - Should be text only and maxlength 10 characters
+1. Show error message in alert / toast.
+2. Display employee records in list using GET
+3. Storybook library 
+4. Create new Input component
+
+
+

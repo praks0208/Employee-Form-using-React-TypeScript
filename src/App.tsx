@@ -2,9 +2,11 @@ import React from "react";
 import EmployeeForm from "./components/EmployeeForm";
 import EmployeeFormValidation from "./components/EmployeeFormValidation";
 import EmployeeFormStyled from "./components/EmployeeFormStyled";
+import EmployeeRecords from  "./components/EmployeeRecords";
 import { Box } from "@mui/material";
 const App: React.FC = () => {
   return (
+    <>
     <Box
     sx={{
       bgcolor: "#e3f2fd",
@@ -14,10 +16,14 @@ const App: React.FC = () => {
       alignItems: "center", 
     }}
   >
-    {/* <EmployeeFormStyled /> */}
+    <EmployeeFormStyled />
     {/* <EmployeeForm /> */}
-    <EmployeeFormValidation />
+    {/* <EmployeeFormValidation /> */}
   </Box>
+  <Box>
+    <EmployeeRecords />
+  </Box>
+  </>
   );
 };
 
