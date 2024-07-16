@@ -16,9 +16,9 @@ const App: React.FC = () => {
       alignItems: "center", 
     }}
   >
-    <EmployeeFormStyled />
+    {/* <EmployeeFormStyled /> */}
     {/* <EmployeeForm /> */}
-    {/* <EmployeeFormValidation /> */}
+    <EmployeeFormValidation />
   </Box>
   <Box>
     <EmployeeRecords />

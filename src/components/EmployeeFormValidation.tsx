@@ -1,6 +1,33 @@
-import React, { useState } from "react";
-import { TextField, Typography, Button, Container, Box } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import {
+  TextField,
+  Typography,
+  Button,
+  Container,
+  Box,
+  Grid,
+  Alert,
+  ThemeProvider,
+  createTheme,
+} from "@mui/material";
 import axios from "axios";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#1976d2", // Primary color
+    },
+    secondary: {
+      main: "#dc004e", // Secondary color
+    },
+  },
+  typography: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    h5: {
+      fontWeight: 600,
+    },
+  },
+});
 
 interface EmployeeFormState {
   firstName: string;
@@ -20,7 +47,7 @@ interface EmployeeFormErrors {
   address?: string;
 }
 
-const EmployeeFormValidation: React.FC = () => {
+const EmployeeFormStyled: React.FC = () => {
   const initialFormData: EmployeeFormState = {
     firstName: "",
     lastName: "",
@@ -33,6 +60,7 @@ const EmployeeFormValidation: React.FC = () => {
   const [formData, setFormData] = useState<EmployeeFormState>(initialFormData);
   const [errors, setErrors] = useState<EmployeeFormErrors>({});
   const [isPending, setIsPending] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -44,21 +72,32 @@ const EmployeeFormValidation: React.FC = () => {
 
   const validate = (): boolean => {
     const newErrors: EmployeeFormErrors = {};
-    const namePattern = /^[A-Za-z]+$/;
+    const namePattern = /^[A-Za-z]{1,20}$/;
     const employeeCodePattern = /^\d{4}$/;
     const contactPattern = /^\d{10}$/;
+    const addressPattern = /^[A-Za-z\s]{2,10}$/;
 
     formData.firstName = formData.firstName.trim();
     formData.lastName = formData.lastName.trim();
     formData.contact = formData.contact.trim();
     formData.address = formData.address.trim();
 
+    if (formData.firstName.length < 2 || formData.firstName.length > 20) {
+      newErrors.firstName = "First name must be between 2 and 20 characters";
+    }
+
+    if (formData.lastName.length < 2 || formData.lastName.length > 20) {
+      newErrors.lastName = "Last name must be between 2 and 20 characters";
+    }
+
     if (!namePattern.test(formData.firstName)) {
-      newErrors.firstName = "First name should contain only letters";
+      newErrors.firstName =
+        "First name should contain only letters and be up to 20 characters";
     }
 
     if (!namePattern.test(formData.lastName)) {
-      newErrors.lastName = "Last name should contain only letters";
+      newErrors.lastName =
+        "Last name should contain only letters and be up to 20 characters";
     }
 
     if (!employeeCodePattern.test(formData.employeeCode)) {
@@ -73,8 +112,9 @@ const EmployeeFormValidation: React.FC = () => {
       newErrors.dob = "Date of birth should not be null";
     }
 
-    if (!formData.address) {
-      newErrors.address = "Address should not be empty";
+    if (!addressPattern.test(formData.address)) {
+      newErrors.address =
+        "Address must be between 2 and 10 characters and contain only letters";
     }
 
     setErrors(newErrors);
@@ -93,136 +133,253 @@ const EmployeeFormValidation: React.FC = () => {
     setIsPending(true);
 
     try {
-      // Using Axios
-      const response = await axios.post(
-        "http://192.168.1.11:5126/api/Employee",
-        formData
-      );
-      console.log("Form submitted successfully:", response.data);
-      setIsPending(false);
+      const response = await fetch("http://192.168.1.11:5126/api/Employee", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-      //   Using Fetch
-      // fetch("http://192.168.1.11:5126/api/Employee", {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json"},
-      //       body: JSON.stringify(formData)
-      // }).then(() => {
-      //     console.log("Form submitted successfully");
-      // })
+      if (response.ok) {
+        console.log("Form submitted successfully");
+        setSubmitSuccess(true); // Activate success alert
+      } else {
+        throw new Error("Failed to submit form");
+      }
 
       setFormData(initialFormData);
       setErrors({});
     } catch (error) {
       console.error("Error submitting form:", error);
+    } finally {
+      setIsPending(false);
     }
   };
 
+  useEffect(() => {
+    if (submitSuccess) {
+      const timer = setTimeout(() => {
+        setSubmitSuccess(false);
+      }, 5000); // Hide after 5 seconds
+
+      return () => clearTimeout(timer); // Cleanup
+    }
+  }, [submitSuccess]);
+
   return (
-    <Container maxWidth="sm">
-      <Typography component="h1" variant="h5">
-        Employee Registration
-      </Typography>
-      <Box component="form" onSubmit={handleSubmit} sx={{ mt: 5 }}>
-        <TextField
-          fullWidth
-          label="First Name"
-          name="firstName"
-          value={formData.firstName}
-          onChange={handleChange}
-          margin="normal"
-          required
-          error={!!errors.firstName}
-          helperText={errors.firstName}
-        />
-        <TextField
-          fullWidth
-          label="Last Name"
-          name="lastName"
-          value={formData.lastName}
-          onChange={handleChange}
-          margin="normal"
-          required
-          error={!!errors.lastName}
-          helperText={errors.lastName}
-        />
-        <TextField
-          fullWidth
-          label="Employee Code"
-          name="employeeCode"
-          value={formData.employeeCode}
-          onChange={handleChange}
-          margin="normal"
-          required
-          inputProps={{
-            maxLength: 4,
-            pattern: "[0-9]*",
-            inputMode: "numeric",
+    <ThemeProvider theme={theme}>
+      <Container component="main" maxWidth="xs" sx={{ padding: 2 }}>
+        <Box
+          sx={{
+            marginTop: 8,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
           }}
-          error={!!errors.employeeCode}
-          helperText={errors.employeeCode}
-        />
-        <TextField
-          fullWidth
-          label="Contact"
-          name="contact"
-          value={formData.contact}
-          onChange={handleChange}
-          margin="normal"
-          required
-          inputProps={{
-            maxLength: 10,
-            pattern: "[0-9]*",
-            inputMode: "numeric",
-          }}
-          error={!!errors.contact}
-          helperText={errors.contact}
-        />
-        <TextField
-          fullWidth
-          label="Date of Birth"
-          name="dob"
-          type="date"
-          value={formData.dob}
-          onChange={handleChange}
-          margin="normal"
-          InputLabelProps={{ shrink: true }}
-          required
-          error={!!errors.dob}
-          helperText={errors.dob}
-        />
-        <TextField
-          fullWidth
-          label="Address"
-          name="address"
-          value={formData.address}
-          onChange={handleChange}
-          margin="normal"
-          required
-          error={!!errors.address}
-          helperText={errors.address}
-        />
-        {!isPending && <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          sx={{ mt: 3 }}
         >
-          Submit
-        </Button>}
+          <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
+            Employee Registration
+          </Typography>
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{
+              mt: 5,
+              p: 3,
+              bgcolor: "#f5f5f5",
+              borderRadius: 2,
+              boxShadow: 3,
+            }}
+          >
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="First Name"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  margin="normal"
+                  required
+                  error={!!errors.firstName}
+                  helperText={errors.firstName}
+                  sx={{
+                    bgcolor: "#fff",
+                    borderRadius: 1,
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: errors.firstName ? "red" : "#ccc",
+                      },
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Last Name"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  margin="normal"
+                  required
+                  error={!!errors.lastName}
+                  helperText={errors.lastName}
+                  sx={{
+                    bgcolor: "#fff",
+                    borderRadius: 1,
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: errors.lastName ? "red" : "#ccc",
+                      },
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Employee Code"
+                  name="employeeCode"
+                  value={formData.employeeCode}
+                  onChange={handleChange}
+                  margin="normal"
+                  required
+                  inputProps={{
+                    maxLength: 4,
+                    pattern: "[0-9]*",
+                    inputMode: "numeric",
+                  }}
+                  error={!!errors.employeeCode}
+                  helperText={errors.employeeCode}
+                  sx={{
+                    bgcolor: "#fff",
+                    borderRadius: 1,
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: errors.employeeCode ? "red" : "#ccc",
+                      },
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Contact"
+                  name="contact"
+                  value={formData.contact}
+                  onChange={handleChange}
+                  margin="normal"
+                  required
+                  inputProps={{
+                    maxLength: 10,
+                    pattern: "[0-9]*",
+                    inputMode: "numeric",
+                  }}
+                  error={!!errors.contact}
+                  helperText={errors.contact}
+                  sx={{
+                    bgcolor: "#fff",
+                    borderRadius: 1,
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: errors.contact ? "red" : "#ccc",
+                      },
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Date of Birth"
+                  name="dob"
+                  type="date"
+                  value={formData.dob}
+                  onChange={handleChange}
+                  margin="normal"
+                  InputLabelProps={{ shrink: true }}
+                  required
+                  error={!!errors.dob}
+                  helperText={errors.dob}
+                  sx={{
+                    bgcolor: "#fff",
+                    borderRadius: 1,
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: errors.dob ? "red" : "#ccc",
+                      },
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Address"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  margin="normal"
+                  required
+                  error={!!errors.address}
+                  helperText={errors.address}
+                  sx={{
+                    bgcolor: "#fff",
+                    borderRadius: 1,
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: errors.address ? "red" : "#ccc",
+                      },
+                    },
+                  }}
+                />
+              </Grid>
+            </Grid>
+            <Box display="flex" justifyContent="center" sx={{ mt: 3 }}>
+              {!isPending && (
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  sx={{ mt: 3 }}
+                >
+                  Submit
+                </Button>
+              )}
 
-        {isPending && <Button 
-          variant="contained"
-          color="primary"
-          sx={{ mt: 3 }}
-          disabled
-        >
-          Submitting... 
-        </Button>}
+              {isPending && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ mt: 3 }}
+                  disabled
+                >
+                  Submitting...
+                </Button>
+              )}
 
-      </Box>
-    </Container>
+              {submitSuccess && (
+                <Alert
+                  severity="success"
+                  sx={{
+                    mt: 2,
+                    backgroundColor: "transparent",
+                    border: "none",
+                    color: "green",
+                  }}
+                >
+                  Form submitted successfully!
+                </Alert>
+              )}
+            </Box>
+          </Box>
+        </Box>
+      </Container>
+    </ThemeProvider>
   );
 };
 
-export default EmployeeFormValidation;
+export default EmployeeFormStyled;
