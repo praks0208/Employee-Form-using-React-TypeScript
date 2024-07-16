@@ -12,7 +12,7 @@ interface Employee {
   lastName: string;
   employeeCode: string;
   contact: string;
-  dob: string;
+  doB: string;
   address: string;
 }
 
@@ -40,19 +40,13 @@ const EmployeeRecords: React.FC = () => {
     fetchEmployees();
   }, []);
 
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-
-    if (isNaN(date.getTime())) {
-      return "Invalid Date";
-    }
-
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const day = date.getDate().toString().padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-  };
+//   const formatDate = (dateString: string): string => {
+//     const dateParts = dateString.split("T")[0].split("-");
+//     const year = dateParts[0];
+//     const month = dateParts[1];
+//     const day = dateParts[2];
+//     return `${year}-${month}-${day}`;
+//   };
 
   return (
     <Container>
@@ -68,7 +62,7 @@ const EmployeeRecords: React.FC = () => {
               primary={`${employee.firstName} ${employee.lastName}`}
               secondary={`Employee Code: ${employee.employeeCode}, Contact: ${
                 employee.contact
-              }, DOB: ${formatDate(employee.dob)}, Address: ${
+              }, DOB: ${(employee.doB).split("T")[0]}, Address: ${
                 employee.address
               }`}
             />

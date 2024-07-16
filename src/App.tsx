@@ -2,7 +2,6 @@ import React from "react";
 import EmployeeForm from "./components/EmployeeForm";
 import EmployeeFormValidation from "./components/EmployeeFormValidation";
 import EmployeeFormStyled from "./components/EmployeeFormStyled";
-import EmployeeDataFetcher from "./components/FetchRecords/EmployeeDataFetcher";
 import { Box } from "@mui/material";
 import EmployeeRecords from "./components/FetchRecords/EmployeeRecords";
 const App: React.FC = () => {
