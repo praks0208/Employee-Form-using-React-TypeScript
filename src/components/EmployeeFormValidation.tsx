@@ -15,10 +15,10 @@ import axios from "axios";
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#1976d2", // Primary color
+      main: "#1976d2",
     },
     secondary: {
-      main: "#dc004e", // Secondary color
+      main: "#dc004e",
     },
   },
   typography: {
@@ -47,7 +47,7 @@ interface EmployeeFormErrors {
   address?: string;
 }
 
-const EmployeeFormStyled: React.FC = () => {
+const EmployeeFormValidation: React.FC = () => {
   const initialFormData: EmployeeFormState = {
     firstName: "",
     lastName: "",
@@ -138,7 +138,10 @@ const EmployeeFormStyled: React.FC = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          dob: new Date(formData.dob).toISOString().split("T")[0],
+        }),
       });
 
       if (response.ok) {
@@ -338,43 +341,19 @@ const EmployeeFormStyled: React.FC = () => {
                 />
               </Grid>
             </Grid>
-            <Box display="flex" justifyContent="center" sx={{ mt: 3 }}>
-              {!isPending && (
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  sx={{ mt: 3 }}
-                >
-                  Submit
-                </Button>
-              )}
-
-              {isPending && (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  sx={{ mt: 3 }}
-                  disabled
-                >
-                  Submitting...
-                </Button>
-              )}
-
-              {submitSuccess && (
-                <Alert
-                  severity="success"
-                  sx={{
-                    mt: 2,
-                    backgroundColor: "transparent",
-                    border: "none",
-                    color: "green",
-                  }}
-                >
-                  Form submitted successfully!
-                </Alert>
-              )}
-            </Box>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              disabled={isPending}
+              sx={{ mt: 3, mb: 2 }}
+            >
+              {isPending ? "Submitting..." : "Submit"}
+            </Button>
+            {submitSuccess && (
+              <Alert severity="success">Form submitted successfully!</Alert>
+            )}
           </Box>
         </Box>
       </Container>
@@ -382,4 +361,4 @@ const EmployeeFormStyled: React.FC = () => {
   );
 };
 
-export default EmployeeFormStyled;
+export default EmployeeFormValidation;

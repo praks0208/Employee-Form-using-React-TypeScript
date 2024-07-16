@@ -2,28 +2,30 @@ import React from "react";
 import EmployeeForm from "./components/EmployeeForm";
 import EmployeeFormValidation from "./components/EmployeeFormValidation";
 import EmployeeFormStyled from "./components/EmployeeFormStyled";
-import EmployeeRecords from  "./components/EmployeeRecords";
+import EmployeeDataFetcher from "./components/FetchRecords/EmployeeDataFetcher";
 import { Box } from "@mui/material";
+import EmployeeRecords from "./components/FetchRecords/EmployeeRecords";
 const App: React.FC = () => {
   return (
-    <>
-    <Box
-    sx={{
-      bgcolor: "#e3f2fd",
-      minHeight: "100vh", 
-      display: "flex",
-      justifyContent: "center", 
-      alignItems: "center", 
-    }}
-  >
-    {/* <EmployeeFormStyled /> */}
-    {/* <EmployeeForm /> */}
-    <EmployeeFormValidation />
-  </Box>
-  <Box>
-    <EmployeeRecords />
-  </Box>
-  </>
+    <Box sx={{
+      bgcolor: "#e3f2fd"}}>
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {/* <EmployeeFormStyled /> */}
+        {/* <EmployeeForm /> */}
+        <EmployeeFormValidation />
+      </Box>
+      <Box>
+        {/* <EmployeeDataFetcher /> */}
+        <EmployeeRecords />
+      </Box>
+    </Box>
   );
 };
 
