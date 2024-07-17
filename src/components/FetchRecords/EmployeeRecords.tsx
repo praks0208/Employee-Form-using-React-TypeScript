@@ -80,7 +80,7 @@ const EmployeeRecords: React.FC = () => {
       >
         Add Employee
       </Button>
-      <Box className="ag-theme-alpine" style={{ height: 400, width: "auto"}}>
+      <Box className="ag-theme-alpine" style={{ height: 400, width: "auto", overflowX: "hidden"}}>
         <AgGridReact<Employee>
           rowData={employees}
           columnDefs={colDefs}
