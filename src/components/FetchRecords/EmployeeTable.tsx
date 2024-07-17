@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  Box,
   Typography,
   Container,
   Table,
@@ -9,6 +10,7 @@ import {
   TableCell,
   Paper,
   Button,
+  CircularProgress,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { makeStyles } from "@material-ui/core";
@@ -79,7 +81,13 @@ const EmployeeTable: React.FC = () => {
         Employee Records
       </Typography>
       {loading && <Typography>Loading Records...</Typography>}
+      {loading && (
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+          <CircularProgress />
+        </Box>
+      )}
       {error && <Typography color="error">{error}</Typography>}
+      {}
       <Button
         variant="contained"
         color="primary"

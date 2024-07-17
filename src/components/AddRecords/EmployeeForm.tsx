@@ -85,7 +85,7 @@ const EmployeeForm: React.FC = () => {
     }
 
     setIsPending(true);
-    setError(null); // Reset error before submission
+    setError(null);
 
     try {
       const response = await fetch("http://192.168.1.11:5126/api/Employee", {
@@ -109,7 +109,8 @@ const EmployeeForm: React.FC = () => {
         }, 2000);
       } else {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to submit form");
+        console.error("Error submitting form:", errorData);
+        throw new Error(errorData.error || "Failed to submit form");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
