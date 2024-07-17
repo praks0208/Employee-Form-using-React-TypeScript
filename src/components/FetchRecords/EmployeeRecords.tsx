@@ -1,41 +1,16 @@
 import React, { useEffect, useState } from "react";
 import {
+  Box,
   Typography,
   Container,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Paper,
+  Button,
+  CircularProgress,
 } from "@mui/material";
-
-import { makeStyles } from "@material-ui/core";
-
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650,
-  },
-  tableHead: {
-    backgroundColor: "#b6c6e0",
-    fontWeight: "bold",
-  },
-  tableRow: {
-    "&:nth-of-type(odd)": {
-      backgroundColor: "#f9f9f9",
-    },
-  },
-  tableCell: {
-    padding: "10px 20px",
-  },
-  container: {
-    marginTop: "20px",
-  },
-  paper: {
-    marginTop: "20px",
-    padding: "20px",
-  },
-});
+import { useNavigate } from "react-router-dom";
+import { AgGridReact } from "ag-grid-react";
+import {ColDef} from "ag-grid-community";
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-alpine.css";
 
 interface Employee {
   firstName: string;
@@ -46,11 +21,11 @@ interface Employee {
   address: string;
 }
 
-const EmployeeTable: React.FC = () => {
-  const classes = useStyles();
+const EmployeeRecords: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -71,54 +46,49 @@ const EmployeeTable: React.FC = () => {
     fetchEmployees();
   }, []);
 
+  const [colDefs, setColDefs] = useState<ColDef<Employee>[]>([
+    { headerName: "First Name", field: "firstName" },
+    { headerName: "Last Name", field: "lastName" },
+    { headerName: "Employee Code", field: "employeeCode" },
+    { headerName: "Contact", field: "contact" },
+    {
+      headerName: "Date of Birth",
+      field: "doB",
+      valueFormatter: (params: { value: string }) => params.value.split("T")[0],
+    },
+    { headerName: "Address", field: "address" },
+  ])
+
+
   return (
-    <Container className={classes.container}>
+    <Container sx={{ marginTop: 4 }}>
       <Typography variant="h4" gutterBottom>
         Employee Records
       </Typography>
-      {loading && <Typography>Loading...</Typography>}
+      {loading && <Typography>Loading Records...</Typography>}
+      {loading && (
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+          <CircularProgress />
+        </Box>
+      )}
       {error && <Typography color="error">{error}</Typography>}
-      {employees.length === 0 && <Typography>No employees found</Typography>}
-      <Paper className={classes.paper}>
-        <Table className={classes.table}>
-          <TableHead className={classes.tableHead}>
-            <TableRow>
-              <TableCell className={classes.tableCell}>First Name</TableCell>
-              <TableCell className={classes.tableCell}>Last Name</TableCell>
-              <TableCell className={classes.tableCell}>Employee Code</TableCell>
-              <TableCell className={classes.tableCell}>Contact</TableCell>
-              <TableCell className={classes.tableCell}>Date of Birth</TableCell>
-              <TableCell className={classes.tableCell}>Address</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {employees.map((employee, index) => (
-              <TableRow key={index} className={classes.tableRow}>
-                <TableCell className={classes.tableCell}>
-                  {employee.firstName}
-                </TableCell>
-                <TableCell className={classes.tableCell}>
-                  {employee.lastName}
-                </TableCell>
-                <TableCell className={classes.tableCell}>
-                  {employee.employeeCode}
-                </TableCell>
-                <TableCell className={classes.tableCell}>
-                  {employee.contact}
-                </TableCell>
-                <TableCell className={classes.tableCell}>
-                  {employee.doB.split("T")[0]}
-                </TableCell>
-                <TableCell className={classes.tableCell}>
-                  {employee.address}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Paper>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => navigate("/")}
+        sx={{ mb: 2 }}
+      >
+        Add Employee
+      </Button>
+      <Box className="ag-theme-alpine" style={{ height: 400, width: "auto"}}>
+        <AgGridReact<Employee>
+          rowData={employees}
+          columnDefs={colDefs}
+          paginationPageSize={10}
+        />
+      </Box>
     </Container>
   );
 };
 
-export default EmployeeTable;
+export default EmployeeRecords;
