@@ -47,7 +47,7 @@ interface EmployeeFormErrors {
   address?: string;
 }
 
-const EmployeeForm: React.FC = () => {
+const EmployeeForm = () => {
   const navigate = useNavigate();
   const initialFormData: EmployeeFormState = {
     firstName: "",
@@ -133,8 +133,9 @@ const EmployeeForm: React.FC = () => {
     if (!validate()) {
       return;
     }
-    
+
     setIsPending(true);
+    setError(null);
 
     try {
       const response = await fetch("http://192.168.1.11:5126/api/Employee", {
@@ -157,14 +158,20 @@ const EmployeeForm: React.FC = () => {
           navigate("/records");
         }, 2000);
       } else {
-        throw new Error("Failed to submit form");
+        const errorData = await response.json();
+        console.error("Error submitting form:", errorData);
+        throw new Error(errorData.error || "Failed to submit form");
       }
 
-      setFormData(initialFormData);
+      // setFormData(initialFormData);
       setErrors({});
     } catch (error) {
       console.error("Error submitting form:", error);
-      setError("Failed to submit form. Please try again.");
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Failed to submit form. Please try again.");
+      }
     } finally {
       setIsPending(false);
     }
@@ -327,7 +334,7 @@ const EmployeeForm: React.FC = () => {
               <Alert severity="success">Form submitted successfully!</Alert>
             )}
             {error && <Alert severity="error">{error}</Alert>}
-           
+
             <Button
               fullWidth
               variant="contained"
