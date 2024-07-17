@@ -62,11 +62,12 @@ const EmployeeForm: React.FC = () => {
   const [errors, setErrors] = useState<EmployeeFormErrors>({});
   const [isPending, setIsPending] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, pattern } = e.target;
     const patternMatch = new RegExp(pattern).test(value);
-    console.log({ name, value, pattern, patternMatch });
+    // console.log({ name, value, pattern, patternMatch });
     if (patternMatch) {
       setFormData({
         ...formData,
@@ -132,9 +133,7 @@ const EmployeeForm: React.FC = () => {
     if (!validate()) {
       return;
     }
-
-    console.log("Form Data:", formData);
-    setFormData(initialFormData);
+    
     setIsPending(true);
 
     try {
@@ -151,6 +150,8 @@ const EmployeeForm: React.FC = () => {
 
       if (response.ok) {
         console.log("Form submitted successfully");
+        console.log("Form Data:", formData);
+        setFormData(initialFormData);
         setSubmitSuccess(true);
         setTimeout(() => {
           navigate("/records");
@@ -163,6 +164,7 @@ const EmployeeForm: React.FC = () => {
       setErrors({});
     } catch (error) {
       console.error("Error submitting form:", error);
+      setError("Failed to submit form. Please try again.");
     } finally {
       setIsPending(false);
     }
@@ -324,6 +326,8 @@ const EmployeeForm: React.FC = () => {
             {submitSuccess && (
               <Alert severity="success">Form submitted successfully!</Alert>
             )}
+            {error && <Alert severity="error">{error}</Alert>}
+           
             <Button
               fullWidth
               variant="contained"

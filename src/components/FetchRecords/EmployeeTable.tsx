@@ -78,7 +78,7 @@ const EmployeeTable: React.FC = () => {
       <Typography variant="h4" gutterBottom>
         Employee Records
       </Typography>
-      {loading && <Typography>Loading...</Typography>}
+      {loading && <Typography>Loading Records...</Typography>}
       {error && <Typography color="error">{error}</Typography>}
       <Button
         variant="contained"
