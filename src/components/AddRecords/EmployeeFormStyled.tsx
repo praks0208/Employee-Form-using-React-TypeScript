@@ -10,7 +10,9 @@ import {
   ThemeProvider,
   createTheme,
 } from "@mui/material";
-// import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import useValidation from "../../hooks/useValidation";
+import validationRules from "../../utils/validationRules"; 
 
 const theme = createTheme({
   palette: {
@@ -48,6 +50,7 @@ interface EmployeeFormErrors {
 }
 
 const EmployeeForm: React.FC = () => {
+  const navigate = useNavigate();
   const initialFormData: EmployeeFormState = {
     firstName: "",
     lastName: "",
@@ -57,80 +60,32 @@ const EmployeeForm: React.FC = () => {
     address: "",
   };
 
+  const { errors, validate } = useValidation(validationRules);
   const [formData, setFormData] = useState<EmployeeFormState>(initialFormData);
-  const [errors, setErrors] = useState<EmployeeFormErrors>({});
   const [isPending, setIsPending] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const validate = (): boolean => {
-    const newErrors: EmployeeFormErrors = {};
-    const namePattern = /^[A-Za-z]{1,20}$/;
-    const employeeCodePattern = /^\d{4}$/;
-    const contactPattern = /^\d{10}$/;
-    const addressPattern = /^[A-Za-z\s]{2,10}$/;
-
-    formData.firstName = formData.firstName.trim();
-    formData.lastName = formData.lastName.trim();
-    formData.contact = formData.contact.trim();
-    formData.address = formData.address.trim();
-
-    if (formData.firstName.length < 2 || formData.firstName.length > 20) {
-      newErrors.firstName = "First name must be between 2 and 20 characters";
+    const { name, value, pattern } = e.target;
+    const patternMatch = new RegExp(pattern).test(value);
+    if (patternMatch) {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
     }
-
-    if (formData.lastName.length < 2 || formData.lastName.length > 20) {
-      newErrors.lastName = "Last name must be between 2 and 20 characters";
-    }
-
-    if (!namePattern.test(formData.firstName)) {
-      newErrors.firstName =
-        "First name should contain only letters and be up to 20 characters";
-    }
-
-    if (!namePattern.test(formData.lastName)) {
-      newErrors.lastName =
-        "Last name should contain only letters and be up to 20 characters";
-    }
-
-    if (!employeeCodePattern.test(formData.employeeCode)) {
-      newErrors.employeeCode = "Employee code should be a 4-digit number";
-    }
-
-    if (!contactPattern.test(formData.contact)) {
-      newErrors.contact = "Contact number should be a 10-digit number";
-    }
-
-    if (!formData.dob) {
-      newErrors.dob = "Date of birth should not be null";
-    }
-
-    if (!addressPattern.test(formData.address)) {
-      newErrors.address =
-        "Address must be between 2 and 10 characters and contain only letters";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validate()) {
+    if (!validate(formData)) {
       return;
     }
 
-    console.log("Form Data:", formData);
-    setFormData(initialFormData);
     setIsPending(true);
+    setError(null); // Reset error before submission
 
     try {
       const response = await fetch("http://192.168.1.11:5126/api/Employee", {
@@ -146,15 +101,23 @@ const EmployeeForm: React.FC = () => {
 
       if (response.ok) {
         console.log("Form submitted successfully");
+        console.log("Form Data:", formData);
+        setFormData(initialFormData);
         setSubmitSuccess(true);
+        setTimeout(() => {
+          navigate("/records");
+        }, 2000);
       } else {
-        throw new Error("Failed to submit form");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to submit form");
       }
-
-      setFormData(initialFormData);
-      setErrors({});
     } catch (error) {
       console.error("Error submitting form:", error);
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Failed to submit form. Please try again.");
+      }
     } finally {
       setIsPending(false);
     }
@@ -164,9 +127,9 @@ const EmployeeForm: React.FC = () => {
     if (submitSuccess) {
       const timer = setTimeout(() => {
         setSubmitSuccess(false);
-      }, 5000); 
+      }, 5000);
 
-      return () => clearTimeout(timer); 
+      return () => clearTimeout(timer);
     }
   }, [submitSuccess]);
 
@@ -245,7 +208,7 @@ const EmployeeForm: React.FC = () => {
                   required
                   inputProps={{
                     maxLength: 4,
-                    pattern: "[0-9]*",
+                    pattern: "^[0-9]*$",
                     inputMode: "numeric",
                   }}
                   error={!!errors.employeeCode}
@@ -264,7 +227,7 @@ const EmployeeForm: React.FC = () => {
                   required
                   inputProps={{
                     maxLength: 10,
-                    pattern: "[0-9]*",
+                    pattern: "^[0-9]*$",
                     inputMode: "numeric",
                   }}
                   error={!!errors.contact}
@@ -316,6 +279,17 @@ const EmployeeForm: React.FC = () => {
             {submitSuccess && (
               <Alert severity="success">Form submitted successfully!</Alert>
             )}
+            {error && <Alert severity="error">{error}</Alert>}
+
+            <Button
+              fullWidth
+              variant="contained"
+              color="secondary"
+              onClick={() => navigate("/records")}
+              sx={{ mt: 2 }}
+            >
+              Back to Employee Records
+            </Button>
           </Box>
         </Box>
       </Container>

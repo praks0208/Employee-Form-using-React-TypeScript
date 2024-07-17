@@ -11,6 +11,8 @@ import {
   createTheme,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import useValidation from "../../hooks/useValidation";
+import validationRules from "../../utils/validationRules";
 
 const theme = createTheme({
   palette: {
@@ -47,7 +49,7 @@ interface EmployeeFormErrors {
   address?: string;
 }
 
-const EmployeeForm = () => {
+const EmployeeForm: React.FC = () => {
   const navigate = useNavigate();
   const initialFormData: EmployeeFormState = {
     firstName: "",
@@ -58,8 +60,8 @@ const EmployeeForm = () => {
     address: "",
   };
 
+  const { errors, validate } = useValidation(validationRules);
   const [formData, setFormData] = useState<EmployeeFormState>(initialFormData);
-  const [errors, setErrors] = useState<EmployeeFormErrors>({});
   const [isPending, setIsPending] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -67,7 +69,6 @@ const EmployeeForm = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, pattern } = e.target;
     const patternMatch = new RegExp(pattern).test(value);
-    // console.log({ name, value, pattern, patternMatch });
     if (patternMatch) {
       setFormData({
         ...formData,
@@ -76,66 +77,15 @@ const EmployeeForm = () => {
     }
   };
 
-  const validate = (): boolean => {
-    const newErrors: EmployeeFormErrors = {};
-    const namePattern = /^[A-Za-z]{1,20}$/;
-    const employeeCodePattern = /^\d{4}$/;
-    const contactPattern = /^\d{10}$/;
-    const addressPattern = /^[A-Za-z\s]{2,10}$/;
-
-    formData.firstName = formData.firstName.trim();
-    formData.lastName = formData.lastName.trim();
-    formData.contact = formData.contact.trim();
-    formData.address = formData.address.trim();
-
-    if (formData.firstName.length < 2 || formData.firstName.length > 20) {
-      newErrors.firstName = "First name must be between 2 and 20 characters";
-    }
-
-    if (formData.lastName.length < 2 || formData.lastName.length > 20) {
-      newErrors.lastName = "Last name must be between 2 and 20 characters";
-    }
-
-    if (!namePattern.test(formData.firstName)) {
-      newErrors.firstName =
-        "First name should contain only letters and be up to 20 characters";
-    }
-
-    if (!namePattern.test(formData.lastName)) {
-      newErrors.lastName =
-        "Last name should contain only letters and be up to 20 characters";
-    }
-
-    if (!employeeCodePattern.test(formData.employeeCode)) {
-      newErrors.employeeCode = "Employee code should be a 4-digit number";
-    }
-
-    if (!contactPattern.test(formData.contact)) {
-      newErrors.contact = "Contact number should be a 10-digit number";
-    }
-
-    if (!formData.dob) {
-      newErrors.dob = "Date of birth should not be null";
-    }
-
-    if (!addressPattern.test(formData.address)) {
-      newErrors.address =
-        "Address must be between 2 and 10 characters and contain only letters";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validate()) {
+    if (!validate(formData)) {
       return;
     }
 
     setIsPending(true);
-    setError(null);
+    setError(null); // Reset error before submission
 
     try {
       const response = await fetch("http://192.168.1.11:5126/api/Employee", {
@@ -159,12 +109,8 @@ const EmployeeForm = () => {
         }, 2000);
       } else {
         const errorData = await response.json();
-        console.error("Error submitting form:", errorData);
-        throw new Error(errorData.error || "Failed to submit form");
+        throw new Error(errorData.message || "Failed to submit form");
       }
-
-      // setFormData(initialFormData);
-      setErrors({});
     } catch (error) {
       console.error("Error submitting form:", error);
       if (error instanceof Error) {

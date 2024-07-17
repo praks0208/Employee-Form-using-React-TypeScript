@@ -11,6 +11,7 @@ const App: React.FC = () => {
     <Router>
       <Routes>
         <Route path="/" element={<EmployeeForm />} />
+        {/* <Route path="/" element={<EmployeeFormStyled />} /> */}
         <Route path="/records" element={<EmployeeTable />} />
       </Routes>
     </Router>

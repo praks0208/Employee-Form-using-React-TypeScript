@@ -19,13 +19,13 @@
 //2. Display employee records in list using GET
 3. Storybook library 
 4. Create new Input component
-//5. Creating two pages:
+//5. Creating two pages: Use Routing to connect the pages.
 a. Employee Table with Add button
 b. Employee Form with Submit 
-Use Routing to connect the pages.
+
 
 //New Tasks - 17/7/24
-1. Using ag-grid - https://www.ag-grid.com/example/
+1. Using ag-grid for Employee Table - https://www.ag-grid.com/example/
 2. Creating separate components for Form, Input Fields(TextField)
 3.Custom hook for Validations
 
