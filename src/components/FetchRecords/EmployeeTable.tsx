@@ -8,9 +8,9 @@ import {
   TableRow,
   TableCell,
   Paper,
+  Button,
 } from "@mui/material";
-
-
+import { useNavigate } from "react-router-dom";
 import { makeStyles } from "@material-ui/core";
 
 const useStyles = makeStyles({
@@ -52,6 +52,7 @@ const EmployeeTable: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -79,6 +80,14 @@ const EmployeeTable: React.FC = () => {
       </Typography>
       {loading && <Typography>Loading...</Typography>}
       {error && <Typography color="error">{error}</Typography>}
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => navigate("/")}
+        sx={{ mb: 2 }}
+      >
+        Add Employee
+      </Button>
       <Paper className={classes.paper}>
         <Table className={classes.table}>
           <TableHead className={classes.tableHead}>
@@ -94,12 +103,24 @@ const EmployeeTable: React.FC = () => {
           <TableBody>
             {employees.map((employee, index) => (
               <TableRow key={index} className={classes.tableRow}>
-                <TableCell className={classes.tableCell}>{employee.firstName}</TableCell>
-                <TableCell className={classes.tableCell}>{employee.lastName}</TableCell>
-                <TableCell className={classes.tableCell}>{employee.employeeCode}</TableCell>
-                <TableCell className={classes.tableCell}>{employee.contact}</TableCell>
-                <TableCell className={classes.tableCell}>{employee.doB.split("T")[0]}</TableCell>
-                <TableCell className={classes.tableCell}>{employee.address}</TableCell>
+                <TableCell className={classes.tableCell}>
+                  {employee.firstName}
+                </TableCell>
+                <TableCell className={classes.tableCell}>
+                  {employee.lastName}
+                </TableCell>
+                <TableCell className={classes.tableCell}>
+                  {employee.employeeCode}
+                </TableCell>
+                <TableCell className={classes.tableCell}>
+                  {employee.contact}
+                </TableCell>
+                <TableCell className={classes.tableCell}>
+                  {employee.doB.split("T")[0]}
+                </TableCell>
+                <TableCell className={classes.tableCell}>
+                  {employee.address}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

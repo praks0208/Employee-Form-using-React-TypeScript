@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   TextField,
   Typography,
@@ -6,18 +6,19 @@ import {
   Container,
   Box,
   Grid,
+  Alert,
   ThemeProvider,
   createTheme,
 } from "@mui/material";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#1976d2", // Primary color
+      main: "#1976d2",
     },
     secondary: {
-      main: "#dc004e", // Secondary color
+      main: "#dc004e",
     },
   },
   typography: {
@@ -46,7 +47,8 @@ interface EmployeeFormErrors {
   address?: string;
 }
 
-const EmployeeFormStyled: React.FC = () => {
+const EmployeeForm: React.FC = () => {
+  const navigate = useNavigate();
   const initialFormData: EmployeeFormState = {
     firstName: "",
     lastName: "",
@@ -59,13 +61,18 @@ const EmployeeFormStyled: React.FC = () => {
   const [formData, setFormData] = useState<EmployeeFormState>(initialFormData);
   const [errors, setErrors] = useState<EmployeeFormErrors>({});
   const [isPending, setIsPending] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    const { name, value, pattern } = e.target;
+    const patternMatch = new RegExp(pattern).test(value);
+    console.log({ name, value, pattern, patternMatch });
+    if (patternMatch) {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
   const validate = (): boolean => {
@@ -131,32 +138,55 @@ const EmployeeFormStyled: React.FC = () => {
     setIsPending(true);
 
     try {
-      // Using Axios
-      // const response = await axios.post(
-      //   "http://192.168.1.11:5126/api/Employee",
-      //   formData
-      // );
-      // console.log("Form submitted successfully:", response.data);
-      // setIsPending(false);
-
-      //   Using Fetch
-      fetch("http://192.168.1.11:5126/api/Employee", {
+      const response = await fetch("http://192.168.1.11:5126/api/Employee", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
-      }).then(() => {
-        console.log("Form submitted successfully");
-        setIsPending(false);
+        body: JSON.stringify({
+          ...formData,
+          dob: new Date(formData.dob).toISOString().split("T")[0],
+        }),
       });
+
+      if (response.ok) {
+        console.log("Form submitted successfully");
+        setSubmitSuccess(true);
+        setTimeout(() => {
+          navigate("/records");
+        }, 2000);
+      } else {
+        throw new Error("Failed to submit form");
+      }
 
       setFormData(initialFormData);
       setErrors({});
     } catch (error) {
       console.error("Error submitting form:", error);
+    } finally {
+      setIsPending(false);
     }
   };
+
+  useEffect(() => {
+    if (submitSuccess) {
+      const timer = setTimeout(() => {
+        setSubmitSuccess(false);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [submitSuccess]);
+
+  const getInputStyle = (field: keyof EmployeeFormErrors) => ({
+    bgcolor: "#fff",
+    borderRadius: 1,
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        borderColor: errors[field] ? "red" : "#ccc",
+      },
+    },
+  });
 
   return (
     <ThemeProvider theme={theme}>
@@ -178,7 +208,7 @@ const EmployeeFormStyled: React.FC = () => {
             sx={{
               mt: 5,
               p: 3,
-              bgcolor: "#f5f5f5", // Light background color for the form
+              bgcolor: "#f5f5f5",
               borderRadius: 2,
               boxShadow: 3,
             }}
@@ -195,15 +225,7 @@ const EmployeeFormStyled: React.FC = () => {
                   required
                   error={!!errors.firstName}
                   helperText={errors.firstName}
-                  sx={{
-                    bgcolor: "#fff",
-                    borderRadius: 1,
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: errors.firstName ? "red" : "#ccc", 
-                      },
-                    },
-                  }}
+                  sx={getInputStyle("firstName")}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -217,15 +239,7 @@ const EmployeeFormStyled: React.FC = () => {
                   required
                   error={!!errors.lastName}
                   helperText={errors.lastName}
-                  sx={{
-                    bgcolor: "#fff",
-                    borderRadius: 1,
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: errors.lastName ? "red" : "#ccc",
-                      },
-                    },
-                  }}
+                  sx={getInputStyle("lastName")}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -239,20 +253,12 @@ const EmployeeFormStyled: React.FC = () => {
                   required
                   inputProps={{
                     maxLength: 4,
-                    pattern: "[0-9]*",
+                    pattern: "^[0-9]*$",
                     inputMode: "numeric",
                   }}
                   error={!!errors.employeeCode}
                   helperText={errors.employeeCode}
-                  sx={{
-                    bgcolor: "#fff",
-                    borderRadius: 1,
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: errors.employeeCode ? "red" : "#ccc",
-                      },
-                    },
-                  }}
+                  sx={getInputStyle("employeeCode")}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -266,20 +272,12 @@ const EmployeeFormStyled: React.FC = () => {
                   required
                   inputProps={{
                     maxLength: 10,
-                    pattern: "[0-9]*",
+                    pattern: "^[0-9]*$",
                     inputMode: "numeric",
                   }}
                   error={!!errors.contact}
                   helperText={errors.contact}
-                  sx={{
-                    bgcolor: "#fff",
-                    borderRadius: 1,
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: errors.contact ? "red" : "#ccc",
-                      },
-                    },
-                  }}
+                  sx={getInputStyle("contact")}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -295,15 +293,7 @@ const EmployeeFormStyled: React.FC = () => {
                   required
                   error={!!errors.dob}
                   helperText={errors.dob}
-                  sx={{
-                    bgcolor: "#fff",
-                    borderRadius: 1,
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: errors.dob ? "red" : "#ccc",
-                      },
-                    },
-                  }}
+                  sx={getInputStyle("dob")}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -317,41 +307,32 @@ const EmployeeFormStyled: React.FC = () => {
                   required
                   error={!!errors.address}
                   helperText={errors.address}
-                  sx={{
-                    bgcolor: "#fff",
-                    borderRadius: 1,
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: errors.address ? "red" : "#ccc",
-                      },
-                    },
-                  }}
+                  sx={getInputStyle("address")}
                 />
               </Grid>
             </Grid>
-            <Box display="flex" justifyContent="center" sx={{ mt: 3 }}>
-              {!isPending && (
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  sx={{ mt: 3 }}
-                >
-                  Submit
-                </Button>
-              )}
-
-              {isPending && (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  sx={{ mt: 3 }}
-                  disabled
-                >
-                  Submitting...
-                </Button>
-              )}
-            </Box>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              disabled={isPending}
+              sx={{ mt: 3, mb: 2 }}
+            >
+              {isPending ? "Submitting..." : "Submit"}
+            </Button>
+            {submitSuccess && (
+              <Alert severity="success">Form submitted successfully!</Alert>
+            )}
+            <Button
+              fullWidth
+              variant="contained"
+              color="secondary"
+              onClick={() => navigate("/records")}
+              sx={{ mt: 2 }}
+            >
+              Back to Employee Records
+            </Button>
           </Box>
         </Box>
       </Container>
@@ -359,4 +340,4 @@ const EmployeeFormStyled: React.FC = () => {
   );
 };
 
-export default EmployeeFormStyled;
+export default EmployeeForm;

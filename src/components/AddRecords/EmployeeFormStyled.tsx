@@ -47,7 +47,7 @@ interface EmployeeFormErrors {
   address?: string;
 }
 
-const EmployeeFormValidation: React.FC = () => {
+const EmployeeForm: React.FC = () => {
   const initialFormData: EmployeeFormState = {
     firstName: "",
     lastName: "",
@@ -170,15 +170,15 @@ const EmployeeFormValidation: React.FC = () => {
     }
   }, [submitSuccess]);
 
-  const inputStyle = {
+  const getInputStyle = (field: keyof EmployeeFormErrors) => ({
     bgcolor: "#fff",
     borderRadius: 1,
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        borderColor: errors.firstName ? "red" : "#ccc",
+        borderColor: errors[field] ? "red" : "#ccc",
       },
     },
-  }
+  });
 
   return (
     <ThemeProvider theme={theme}>
@@ -217,7 +217,7 @@ const EmployeeFormValidation: React.FC = () => {
                   required
                   error={!!errors.firstName}
                   helperText={errors.firstName}
-                  sx={inputStyle}
+                  sx={getInputStyle("firstName")}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -231,7 +231,7 @@ const EmployeeFormValidation: React.FC = () => {
                   required
                   error={!!errors.lastName}
                   helperText={errors.lastName}
-                  sx={inputStyle}
+                  sx={getInputStyle("lastName")}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -250,7 +250,7 @@ const EmployeeFormValidation: React.FC = () => {
                   }}
                   error={!!errors.employeeCode}
                   helperText={errors.employeeCode}
-                  sx={inputStyle}
+                  sx={getInputStyle("employeeCode")}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -269,7 +269,7 @@ const EmployeeFormValidation: React.FC = () => {
                   }}
                   error={!!errors.contact}
                   helperText={errors.contact}
-                  sx={inputStyle}
+                  sx={getInputStyle("contact")}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -285,7 +285,7 @@ const EmployeeFormValidation: React.FC = () => {
                   required
                   error={!!errors.dob}
                   helperText={errors.dob}
-                  sx={inputStyle}
+                  sx={getInputStyle("dob")}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -299,7 +299,7 @@ const EmployeeFormValidation: React.FC = () => {
                   required
                   error={!!errors.address}
                   helperText={errors.address}
-                  sx={inputStyle}
+                  sx={getInputStyle("address")}
                 />
               </Grid>
             </Grid>
@@ -323,4 +323,4 @@ const EmployeeFormValidation: React.FC = () => {
   );
 };
 
-export default EmployeeFormValidation;
+export default EmployeeForm;

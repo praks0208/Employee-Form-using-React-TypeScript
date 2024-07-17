@@ -15,14 +15,16 @@
 4. Address - Should be text only and maxlength 10 characters
 
 //New Tasks - 16/7/24
-1. Show error message in alert / toast.
-2. Display employee records in list using GET
+1. Show error message from backend in alert / toast.
+//2. Display employee records in list using GET
 3. Storybook library 
 4. Create new Input component
-5. Creating two pages:
+//5. Creating two pages:
 a. Employee Table with Add button
 b. Employee Form with Submit 
 Use Routing to connect the pages.
+
+
 
 
 
