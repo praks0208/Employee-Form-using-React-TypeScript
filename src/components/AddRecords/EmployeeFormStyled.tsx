@@ -1,6 +1,6 @@
+/** @jsxImportSource @emotion/react */
 import React, { useState, useEffect } from "react";
 import {
-  TextField,
   Typography,
   Button,
   Container,
@@ -12,7 +12,8 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import useValidation from "../../hooks/useValidation";
-import validationRules from "../../utils/validationRules"; 
+import validationRules from "../../utils/validationRules";
+import InputField from "./InputField";
 
 const theme = createTheme({
   palette: {
@@ -40,14 +41,6 @@ interface EmployeeFormState {
   address: string;
 }
 
-interface EmployeeFormErrors {
-  firstName?: string;
-  lastName?: string;
-  employeeCode?: string;
-  contact?: string;
-  dob?: string;
-  address?: string;
-}
 
 const EmployeeForm: React.FC = () => {
   const navigate = useNavigate();
@@ -66,15 +59,11 @@ const EmployeeForm: React.FC = () => {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, pattern } = e.target;
-    const patternMatch = new RegExp(pattern).test(value);
-    if (patternMatch) {
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
-    }
+  const handleChange = (name: string, value: string) => {
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -85,7 +74,7 @@ const EmployeeForm: React.FC = () => {
     }
 
     setIsPending(true);
-    setError(null); // Reset error before submission
+    setError(null);
 
     try {
       const response = await fetch("http://192.168.1.11:5126/api/Employee", {
@@ -109,7 +98,8 @@ const EmployeeForm: React.FC = () => {
         }, 2000);
       } else {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to submit form");
+        console.error("Error submitting form:", errorData);
+        throw new Error(errorData.error || "Failed to submit form");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -132,16 +122,6 @@ const EmployeeForm: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [submitSuccess]);
-
-  const getInputStyle = (field: keyof EmployeeFormErrors) => ({
-    bgcolor: "#fff",
-    borderRadius: 1,
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        borderColor: errors[field] ? "red" : "#ccc",
-      },
-    },
-  });
 
   return (
     <ThemeProvider theme={theme}>
@@ -170,41 +150,33 @@ const EmployeeForm: React.FC = () => {
           >
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
+                <InputField
                   label="First Name"
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
-                  margin="normal"
                   required
                   error={!!errors.firstName}
                   helperText={errors.firstName}
-                  sx={getInputStyle("firstName")}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
+                <InputField
                   label="Last Name"
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
-                  margin="normal"
                   required
                   error={!!errors.lastName}
                   helperText={errors.lastName}
-                  sx={getInputStyle("lastName")}
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  fullWidth
+                <InputField
                   label="Employee Code"
                   name="employeeCode"
                   value={formData.employeeCode}
                   onChange={handleChange}
-                  margin="normal"
                   required
                   inputProps={{
                     maxLength: 4,
@@ -213,17 +185,14 @@ const EmployeeForm: React.FC = () => {
                   }}
                   error={!!errors.employeeCode}
                   helperText={errors.employeeCode}
-                  sx={getInputStyle("employeeCode")}
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  fullWidth
+                <InputField
                   label="Contact"
                   name="contact"
                   value={formData.contact}
                   onChange={handleChange}
-                  margin="normal"
                   required
                   inputProps={{
                     maxLength: 10,
@@ -232,37 +201,29 @@ const EmployeeForm: React.FC = () => {
                   }}
                   error={!!errors.contact}
                   helperText={errors.contact}
-                  sx={getInputStyle("contact")}
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  fullWidth
+                <InputField
                   label="Date of Birth"
                   name="dob"
                   type="date"
                   value={formData.dob}
                   onChange={handleChange}
-                  margin="normal"
-                  InputLabelProps={{ shrink: true }}
                   required
                   error={!!errors.dob}
                   helperText={errors.dob}
-                  sx={getInputStyle("dob")}
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  fullWidth
+                <InputField
                   label="Address"
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
-                  margin="normal"
                   required
                   error={!!errors.address}
                   helperText={errors.address}
-                  sx={getInputStyle("address")}
                 />
               </Grid>
             </Grid>
