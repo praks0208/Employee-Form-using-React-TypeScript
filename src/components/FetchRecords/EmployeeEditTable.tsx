@@ -9,6 +9,7 @@ import {
   Modal,
   TextField,
   Grid,
+  Alert,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { AgGridReact } from "ag-grid-react";
@@ -100,7 +101,13 @@ const EmployeeEditTable: React.FC = () => {
     }
   };
 
-  const [colDefs, setColDefs] = useState<ColDef<Employee>[]>([
+  const handleCloseModal = () => {
+    setEditModalOpen(false);
+    setCurrentEmployee(null);
+    setError(null); // Reset error state when modal is closed
+  };
+
+  const colDefs: ColDef<Employee>[] = [
     { headerName: "First Name", field: "firstName" },
     { headerName: "Last Name", field: "lastName" },
     { headerName: "Employee Code", field: "employeeCode" },
@@ -108,7 +115,8 @@ const EmployeeEditTable: React.FC = () => {
     {
       headerName: "Date of Birth",
       field: "doB",
-      valueFormatter: (params: { value: string }) => params.value.split("T")[0],
+      valueFormatter: (params) =>
+        params.value ? params.value.split("T")[0] : "",
     },
     { headerName: "Address", field: "address" },
     {
@@ -117,14 +125,14 @@ const EmployeeEditTable: React.FC = () => {
         <Button
           variant="contained"
           color="primary"
-          sx={{ my: 1, padding:"2px 20px" }}
+          sx={{ my: 1, padding: "2px 20px" }}
           onClick={() => handleEditClick(params.data)}
         >
           Edit
         </Button>
       ),
     },
-  ]);
+  ];
 
   return (
     <Container sx={{ marginTop: 4, width: "100%" }}>
@@ -137,7 +145,11 @@ const EmployeeEditTable: React.FC = () => {
           <CircularProgress />
         </Box>
       )}
-      {error && <Typography color="error">{error}</Typography>}
+      {/* {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )} */}
       <Button
         variant="contained"
         color="primary"
@@ -157,7 +169,7 @@ const EmployeeEditTable: React.FC = () => {
         </Box>
       </Paper>
 
-      <Modal open={editModalOpen} onClose={() => setEditModalOpen(false)}>
+      <Modal open={editModalOpen} onClose={handleCloseModal}>
         <Box
           component="form"
           onSubmit={handleEditSubmit}
@@ -175,6 +187,7 @@ const EmployeeEditTable: React.FC = () => {
           <Typography variant="h6" gutterBottom>
             Edit Employee
           </Typography>
+
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
@@ -239,14 +252,34 @@ const EmployeeEditTable: React.FC = () => {
               />
             </Grid>
           </Grid>
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            sx={{ mt: 2 }}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              flexDirection: "column",
+              mt: 2,
+              gap: 2,
+            }}
           >
-            Save
-          </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              sx={{ mt: 2 }}
+            >
+              Save
+            </Button>
+            {error && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {error}
+              </Alert>
+            )}
+            {!error && (
+              <Alert severity="success" sx={{ mb: 2 }}>
+                Employee updated successfully
+              </Alert>
+            )}
+          </Box>
         </Box>
       </Modal>
     </Container>
