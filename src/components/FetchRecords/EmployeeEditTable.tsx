@@ -31,6 +31,7 @@ const EmployeeEditTable: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [currentEmployee, setCurrentEmployee] = useState<Employee | null>(null);
   const navigate = useNavigate();
@@ -46,6 +47,7 @@ const EmployeeEditTable: React.FC = () => {
         setEmployees(data);
       } catch (err) {
         setError((err as Error).message);
+        setTimeout(() => setError(null), 5000);
       } finally {
         setLoading(false);
       }
@@ -91,6 +93,9 @@ const EmployeeEditTable: React.FC = () => {
         throw new Error("Failed to update employee");
       }
 
+      setSuccessMessage("Employee updated successfully");
+      setTimeout(() => setSuccessMessage(null), 3000);
+
       setEditModalOpen(false);
       const updatedEmployees = employees.map((emp) =>
         emp.id === currentEmployee.id ? currentEmployee : emp
@@ -98,13 +103,15 @@ const EmployeeEditTable: React.FC = () => {
       setEmployees(updatedEmployees);
     } catch (err) {
       setError((err as Error).message);
+      setTimeout(() => setError(null), 5000);
     }
   };
 
   const handleCloseModal = () => {
     setEditModalOpen(false);
     setCurrentEmployee(null);
-    setError(null); // Reset error state when modal is closed
+    setError(null);
+    setSuccessMessage(null); 
   };
 
   const colDefs: ColDef<Employee>[] = [
@@ -145,11 +152,6 @@ const EmployeeEditTable: React.FC = () => {
           <CircularProgress />
         </Box>
       )}
-      {/* {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
-      )} */}
       <Button
         variant="contained"
         color="primary"
@@ -274,7 +276,7 @@ const EmployeeEditTable: React.FC = () => {
                 {error}
               </Alert>
             )}
-            {!error && (
+            {successMessage && (
               <Alert severity="success" sx={{ mb: 2 }}>
                 Employee updated successfully
               </Alert>
