@@ -5,6 +5,7 @@ import EmployeeTable from "./components/FetchRecords/EmployeeTable";
 
 import EmployeeFormStyled from "./components/AddRecords/EmployeeFormStyled";
 import EmployeeRecords from "./components/FetchRecords/EmployeeRecords";
+import EmployeeEditTable from "./components/FetchRecords/EmployeeEditTable";
 
 const App: React.FC = () => {
   return (
@@ -13,7 +14,8 @@ const App: React.FC = () => {
         {/* <Route path="/" element={<EmployeeForm />} /> */}
         <Route path="/" element={<EmployeeFormStyled />} />
         {/* <Route path="/records" element={<EmployeeTable />} /> */}
-        <Route path="/records" element={<EmployeeRecords />} />
+        <Route path="/records" element={<EmployeeEditTable />} />
+        {/* <Route path="/records" element={<EmployeeRecords />} /> */}
       </Routes>
     </Router>
     // <>
