@@ -117,6 +117,7 @@ const EmployeeEditTable: React.FC = () => {
         <Button
           variant="contained"
           color="primary"
+          sx={{ my: 1, padding:"2px 20px" }}
           onClick={() => handleEditClick(params.data)}
         >
           Edit
@@ -146,7 +147,7 @@ const EmployeeEditTable: React.FC = () => {
         Add Employee
       </Button>
       <Paper sx={{ width: "70vw" }}>
-        <Box className="ag-theme-alpine" sx={{ height: 600, width: "100%" }}>
+        <Box className="ag-theme-alpine" sx={{ height: 550, width: "100%" }}>
           <AgGridReact
             rowData={employees}
             columnDefs={colDefs}
